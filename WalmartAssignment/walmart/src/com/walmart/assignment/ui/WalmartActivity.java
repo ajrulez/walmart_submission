@@ -133,16 +133,20 @@ public class WalmartActivity extends FragmentActivity
         // Build and get a Google API Client to use Google Play Services
         m_googleApiClient = fetchGoogleApiClient();
         
-        if(m_googleApiClient.isConnected()) {
-        	m_signInButton.setVisibility(View.GONE);
-        }
-        
         // If we are getting re-created
         if(savedInstanceState != null) {
         	Log.d(TAG, "onCreate() - Called on recreation, restore connection state from Bundle");
         	
         	int nLoginState = savedInstanceState.getInt(SAVED_LOGIN_STATE, LoginState.STATE_NORMAL.ordinal());
         	m_loginState = LoginState.values()[nLoginState];
+        	
+        	// If we are already logged in and we have network
+        	// TODO
+        	if(m_loginState == LoginState.STATE_NORMAL ||
+        			m_googleApiClient.isConnected()) {
+        		m_signInButton.setVisibility(View.GONE);
+        		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+        	}
         }
     }
 

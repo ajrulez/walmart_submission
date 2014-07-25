@@ -1,4 +1,4 @@
-package com.walmart.assignment.lazyloader;
+package com.walmart.assignment.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

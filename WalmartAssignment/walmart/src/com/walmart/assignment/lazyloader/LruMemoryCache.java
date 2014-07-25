@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.walmart.assignment.utils.BitmapUtils;
+
 import android.graphics.Bitmap;
 import android.util.Log;
 

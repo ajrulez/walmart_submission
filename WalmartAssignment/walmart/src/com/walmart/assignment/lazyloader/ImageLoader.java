@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.walmart.assignment.R;
+import com.walmart.assignment.utils.BitmapUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
