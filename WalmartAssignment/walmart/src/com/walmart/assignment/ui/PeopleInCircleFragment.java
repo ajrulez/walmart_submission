@@ -5,8 +5,10 @@ import java.util.List;
 import com.walmart.assignment.R;
 import com.walmart.assignment.model.PersonAdapter;
 import com.walmart.assignment.model.PersonInCircle;
+import com.walmart.assignment.utils.NetworkUtils;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,6 +104,22 @@ public class PeopleInCircleFragment extends BaseHeadlessFragment {
 	 * 
 	 */
 	private void showPeopleList() {
+		// If we do not have network, show an error
+		if(! NetworkUtils.isOnline(getActivity())) {
+			Log.i(m_fragmentName, "showPeopleList() - Cannot show people's list because Network is Not Available");
+			
+			final String title = getStringFromResources(R.string.error);
+			final String message = getStringFromResources(R.string.noNetwork);
+			if (m_uiUpdater != null) {
+				m_uiUpdater.showAlert(title, message);
+			}
+			
+			// Show Login UI
+			if(m_uiUpdater != null) {
+				m_uiUpdater.showLoginUi();
+			}
+		}
+		
 		// If this Fragment is attached
 		if (m_fragmentAttached.get() && getArguments() != null) {
 			// Get the friend data from Bundle

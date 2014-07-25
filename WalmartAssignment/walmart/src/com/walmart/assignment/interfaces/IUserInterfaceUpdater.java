@@ -15,4 +15,7 @@ package com.walmart.assignment.interfaces;
 public interface IUserInterfaceUpdater {
 	// Method to show an alert dialog
 	public void showAlert(String title, String message);
+	
+	// Method to show Login UI
+	public void showLoginUi();
 }

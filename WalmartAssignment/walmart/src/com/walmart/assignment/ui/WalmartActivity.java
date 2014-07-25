@@ -16,6 +16,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.walmart.assignment.R;
 import com.walmart.assignment.interfaces.IUserInterfaceUpdater;
 import com.walmart.assignment.model.PersonInCircle;
+import com.walmart.assignment.utils.NetworkUtils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -95,6 +96,9 @@ public class WalmartActivity extends FragmentActivity
 	// UI State - Even though we only have one Fragment, I am using
 	// this as a general approach to handle multiple Fragment updates
 	static enum UiState {
+		// Login UI
+		SHOW_LOGIN_UI,
+		
 		// People in Circle
 		SHOW_PEOPLE_IN_CIRCLE,
 		
@@ -142,8 +146,9 @@ public class WalmartActivity extends FragmentActivity
         	
         	// If we are already logged in and we have network
         	// TODO
-        	if(m_loginState == LoginState.STATE_NORMAL ||
-        			m_googleApiClient.isConnected()) {
+        	if((m_loginState == LoginState.STATE_NORMAL ||
+        			m_googleApiClient.isConnected()) &&
+        			NetworkUtils.isOnline(this)) {
         		m_signInButton.setVisibility(View.GONE);
         		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
         	}
@@ -151,7 +156,7 @@ public class WalmartActivity extends FragmentActivity
     }
 
     /**
-     * Override onStart because we want to equest Google
+     * Override onStart because we want to request Google
      * Play Services API to connect
      * 
      */
@@ -292,6 +297,12 @@ public class WalmartActivity extends FragmentActivity
 	@SuppressWarnings("deprecation")
 	private void requestSignIn() {
 		Log.v(TAG, "requestSignIn() - Request or Resolve a Sign-In");
+		
+		// Check Network before proceeding
+		if(! NetworkUtils.isOnline(this)) {
+			showAlert(getResources().getString(R.string.error), 
+					getResources().getString(R.string.noNetwork));
+		}
 		
 		// If we have an intent for sign-in, this may involve user to select an
 		// account or to allow this app certain permissions
@@ -469,6 +480,7 @@ public class WalmartActivity extends FragmentActivity
 		// If we are not already in a connecting state
 		if(! m_googleApiClient.isConnecting()) {
 			switch(v.getId()) {
+				
 				// Sign-in button clicked
 				case R.id.sign_in_button:
 					Log.d(TAG, "onClick() - Sign-in button tapped");
@@ -544,23 +556,33 @@ public class WalmartActivity extends FragmentActivity
 	 * 
 	 */
 	private void updateUi(UiState state) {
-		 // Check that the activity is using container for fragments
-		//
-		if (m_fragmentContainer != null) {
-
-			// However, if we're being restored from a previous state,
-			// then we don't need to do anything and should return or else
-			// we could end up with overlapping fragments.
-			if (m_mainBundle != null) {
-				Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
-				return;
-			}
-		}
 		
 		switch(state) {
+			case SHOW_LOGIN_UI:
+				// Remove Fragment
+				removeFragment();
+				m_currentFragment = null;
+				m_signInButton.setVisibility(View.VISIBLE);
+				break;
+				
 			case SHOW_PEOPLE_IN_CIRCLE: 
+				// Check that the activity is using container for fragments
+				//
+				if (m_fragmentContainer != null) {
+
+					// However, if we're being restored from a previous state,
+					// then we don't need to do anything and should return or else
+					// we could end up with overlapping fragments.
+					if (m_mainBundle != null) {
+						Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
+						return;
+					}
+				}
+				
 				// If we are already showing PeopleInCircleFragment Fragment
-				if(m_currentFragment instanceof PeopleInCircleFragment) {
+				if(m_currentFragment != null &&
+						m_currentFragment instanceof PeopleInCircleFragment &&
+						m_currentFragment.isFragmentAttached()) {
 					Log.d(TAG, "updateUi() - Already showing PeopleInCircleFragment, Nothing to update");
 					return;
 				}
@@ -599,6 +621,14 @@ public class WalmartActivity extends FragmentActivity
 		}
 	}
 
+	/**
+	 * This method is used to show an AlertDialog in case
+	 * of Error or Warnings, when an action cannot be
+	 * completed
+	 * 
+	 * @param String - Title of the AlertDialog
+	 * @param String - Message of the AlertDialog
+	 */
 	@Override
 	public void showAlert(final String title, final String message) {
 		runOnUiThread(new Runnable() {
@@ -628,5 +658,36 @@ public class WalmartActivity extends FragmentActivity
 		        alertDialog1.show();
 			}
 		});
+	}
+	
+	/**
+	 * Method to show login UI
+	 * 
+	 */
+	@Override
+	public void showLoginUi() {
+		updateUi(UiState.SHOW_LOGIN_UI);
+	}
+	
+	/**
+	 * Utility method to remove current fragment
+	 * 
+	 * This is related to Fragment management strategy
+	 * explained earlier in comments in this source file
+	 */
+	private void removeFragment() {
+		Log.d(TAG, "removeFragment() - Method to remove current fragment invoked");
+		
+		// If we have any other Fragment, remove it first
+		if (m_currentFragment != null
+				&& m_currentFragment.isFragmentAttached()) {
+			Log.d(TAG, "Attempting to remove current fragment");
+			getSupportFragmentManager().beginTransaction()
+					.remove(m_currentFragment).commit();
+		}
+		
+		else {
+			Log.d(TAG, "Cannot remove current fragment because current fragment is null or is not attached");
+		}
 	}
 }

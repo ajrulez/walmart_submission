@@ -7,5 +7,7 @@
     <string name="clearCache">Clear Cache</string>
     <string name="emptyPeopleList">The list of people in your circles appear to be empty. We cannot show this list.</string>
     <string name="warning">Warning</string>
+    <string name="noNetwork">You are not connected to the Internet at this moment. We cannot process your request.</string>
+    <string name="error">Error</string>
 
 </resources>

@@ -99,4 +99,14 @@ public class BaseHeadlessFragment extends Fragment {
 	protected String getStringFromResources(int stringResourceId) {
 		return getResources().getString(stringResourceId);
 	}
+	
+	/**
+	 * Method to check if a Fragment is attached
+	 * 
+	 * @param boolean - true if the Fragment is attached
+	 * 					false otherwise
+	 */
+	public boolean isFragmentAttached() {
+		return m_fragmentAttached.get();
+	}
 }
