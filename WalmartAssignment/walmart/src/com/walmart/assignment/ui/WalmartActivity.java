@@ -146,9 +146,7 @@ public class WalmartActivity extends FragmentActivity
         	
         	// If we are already logged in and we have network
         	// TODO
-        	if((m_loginState == LoginState.STATE_NORMAL ||
-        			m_googleApiClient.isConnected()) &&
-        			NetworkUtils.isOnline(this)) {
+        	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
         		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
         	}
