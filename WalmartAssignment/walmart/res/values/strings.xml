@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Walmart Assignment</string>
+    <string name="play_services_error">Google Play services is not available.</string>
+    <string name="close">Close</string>
+    <string name="clearCache">Clear Cache</string>
+    <string name="emptyPeopleList">The list of people in your circles appear to be empty. We cannot show this list.</string>
+    <string name="warning">Warning</string>
+
+</resources>
