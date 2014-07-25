@@ -332,19 +332,6 @@ public class WalmartActivity extends FragmentActivity
 		}
 	}
 	
-	// TODO
-//	  private void onSignedOut() {
-//		    // Update the UI to reflect that the user is signed out.
-//		    m_signInButton.setEnabled(true);
-//		    mSignOutButton.setEnabled(false);
-//		    mRevokeButton.setEnabled(false);
-//
-//		    mStatus.setText(R.string.status_signed_out);
-//
-//		    mCirclesList.clear();
-//		    mCirclesAdapter.notifyDataSetChanged();
-//		  }
-//	  
 	/**
 	 * This callback is invoked when user is successfully
 	 * connected to Google Play Services (i.e the user
@@ -360,6 +347,9 @@ public class WalmartActivity extends FragmentActivity
 	public void onConnected(Bundle connectionHint) {
 	    // Reaching onConnected means we consider the user signed in.
 	    Log.v(TAG, "onConnected - User is now connected to Google Play Services");
+	    
+	    // Hide the Sign In Button 
+	    m_signInButton.setVisibility(View.GONE);
 	    
 	    // Request for people in circles
 	    if(! getPeopleInCircles()) {
@@ -432,8 +422,7 @@ public class WalmartActivity extends FragmentActivity
 			finally {
 				people.close();
 			}
-
-			m_signInButton.setVisibility(View.GONE);
+			
 			updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
 		}
 		
