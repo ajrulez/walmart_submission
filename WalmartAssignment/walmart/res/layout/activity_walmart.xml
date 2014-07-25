@@ -13,14 +13,6 @@
           android:layout_gravity="center_horizontal"
           android:enabled="false" />
     
-    <Button
-        android:id="@+id/circles_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone" />
-        
     <RelativeLayout
         android:id="@+id/fragmentLayout"
         android:layout_width="match_parent"

@@ -29,7 +29,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class WalmartActivity extends FragmentActivity
@@ -94,9 +93,6 @@ public class WalmartActivity extends FragmentActivity
 	// Current Fragment
 	protected BaseHeadlessFragment m_currentFragment;
 	
-	// Circles Button
-	protected Button m_circlesButton;
-	
 	// UI State - Even though we only have one Fragment, I am using
 	// this as a general approach to handle multiple Fragment updates
 	static enum UiState {
@@ -133,14 +129,8 @@ public class WalmartActivity extends FragmentActivity
         m_signInButton = (SignInButton) findViewById(R.id.sign_in_button);
  
         // Set the onClickListener for Sign-In button
-        m_signInButton.setOnClickListener(this);
-        m_signInButton.setVisibility(View.INVISIBLE);
-        
-        // Circles Button
-        m_circlesButton = (Button) findViewById(R.id.circles_button);
-        m_circlesButton.setBackgroundResource(R.drawable.g_circle);
-        m_circlesButton.setOnClickListener(this);
-        
+        m_signInButton.setOnClickListener(this);;
+
         // Create a new List for people
         m_peopleList = new ArrayList<PersonInCircle>();
 
@@ -177,22 +167,6 @@ public class WalmartActivity extends FragmentActivity
 		Log.v(TAG, "onStart() - Request Google Play Services to connect the user");
 		// Request to connect Google Play Services
 		m_googleApiClient.connect();
-	}
-	
-	/**
-	 * Override onResume to show Sign In button
-	 * 
-	 */
-	@Override
-	protected void onResume() {
-		super.onResume();
-		
-		Log.v(TAG, "onRequest() - Activity resume");
-		
-		// Show button
-		if(m_signInButton != null) {
-			m_signInButton.setVisibility(View.VISIBLE);
-		}
 	}
 
 	/**
@@ -512,15 +486,6 @@ public class WalmartActivity extends FragmentActivity
 					Log.d(TAG, "onClick() - Sign-in button tapped");
 					requestSignIn();
 					break;
-					
-				// Circles Button clicked
-				case R.drawable.g_circle:
-					Log.d(TAG, "onClick() - Circles button tapped");
-					if(m_googleApiClient != null && 
-							m_googleApiClient.isConnected()) {
-						updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
-					}
-					
 			
 				default:
 					// Nothing to do
@@ -597,23 +562,7 @@ public class WalmartActivity extends FragmentActivity
 				// Remove Fragment
 				removeFragment();
 				m_currentFragment = null;
-				
-				if(m_googleApiClient != null) {
-					if(! m_googleApiClient.isConnected()) {
-						m_signInButton.setVisibility(View.VISIBLE);
-						m_circlesButton.setVisibility(View.GONE);
-					}
-				
-					else {
-						m_signInButton.setVisibility(View.GONE);
-						m_circlesButton.setVisibility(View.VISIBLE);
-					}
-				}
-				
-				else {
-					m_signInButton.setVisibility(View.VISIBLE);
-					m_circlesButton.setVisibility(View.GONE);
-				}
+				m_signInButton.setVisibility(View.VISIBLE);
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE: 
@@ -637,9 +586,6 @@ public class WalmartActivity extends FragmentActivity
 					Log.d(TAG, "updateUi() - Already showing PeopleInCircleFragment, Nothing to update");
 					return;
 				}
-				
-				m_signInButton.setVisibility(View.GONE);
-				m_circlesButton.setVisibility(View.GONE);
 				
 				// Create an instance of PeopleInCircleFragment
 				PeopleInCircleFragment peopleInCircleFragment = new PeopleInCircleFragment();
