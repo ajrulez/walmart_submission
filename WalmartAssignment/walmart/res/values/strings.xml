@@ -9,5 +9,7 @@
     <string name="warning">Warning</string>
     <string name="noNetwork">You are not connected to the Internet at this moment. We cannot process your request.</string>
     <string name="error">Error</string>
+    <string name="nameLabel">Name: </string>
+    <string name="locationLabel">Location: </string>
 
 </resources>

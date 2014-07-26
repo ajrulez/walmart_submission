@@ -18,4 +18,7 @@ public interface IUserInterfaceUpdater {
 	
 	// Method to show Login UI
 	public void showLoginUi();
+	
+	// Method to show UserInformation
+	public void showUserInformation();
 }

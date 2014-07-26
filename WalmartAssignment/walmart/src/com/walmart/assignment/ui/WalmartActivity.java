@@ -12,9 +12,12 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.plus.model.people.Person.Organizations;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.walmart.assignment.R;
 import com.walmart.assignment.interfaces.IUserInterfaceUpdater;
+import com.walmart.assignment.model.LoggedInUser;
 import com.walmart.assignment.model.PersonInCircle;
 import com.walmart.assignment.utils.NetworkUtils;
 
@@ -99,12 +102,18 @@ public class WalmartActivity extends FragmentActivity
 		// Login UI
 		SHOW_LOGIN_UI,
 		
+		// User Information
+		SHOW_USER_INFORMATION,
+		
 		// People in Circle
 		SHOW_PEOPLE_IN_CIRCLE,
 		
 		// MAX
 		MAX
 	}
+	
+	// LoggedInUser - Current uset who is logged in
+	private LoggedInUser m_loggedInUser;
 	
 	
 	/**
@@ -351,11 +360,64 @@ public class WalmartActivity extends FragmentActivity
 	    // Hide the Sign In Button 
 	    m_signInButton.setVisibility(View.GONE);
 	    
+	    // Retrieve some information about logged in user
+	    Person currentUser = Plus.PeopleApi.getCurrentPerson(m_googleApiClient);
+	    
+	    if(currentUser != null) {
+	    	m_loggedInUser = new LoggedInUser();
+	    	
+	    	// Location
+	    	if(currentUser.hasCurrentLocation()) {
+	    		m_loggedInUser.setLocation(currentUser.getCurrentLocation());
+	    	}
+	    	
+	    	// Name
+	    	if(currentUser.hasName()) {
+	    		m_loggedInUser.setName(currentUser.getName().getGivenName() + " " + currentUser.getName().getFamilyName());
+	    	}
+	    	
+	    	// Organization
+	    	if(currentUser.hasOrganizations()) {
+	    		final int MAX_COUNT = 3;
+	    		int currentCount = 0;
+	    		
+	    		StringBuilder orgs = new StringBuilder();
+	    		for(Organizations org : currentUser.getOrganizations()) {
+	    			String name = "Not Available";
+	    			String title = "Unknown";
+	    			orgs.append("Organization Name: ");
+	    			if(org.hasName()) {
+	    				name = org.getName();
+	    			}
+	    			orgs.append(name);
+	    			orgs.append(" (Title: ");
+	    			if(org.hasType()) {
+	    				title = org.getTitle();
+	    			}
+	    			orgs.append(title);
+	    			orgs.append(")");
+	    			orgs.append("\n\n");
+	    			currentCount ++;
+	    			
+	    			if(currentCount >= MAX_COUNT) {
+	    				break;
+	    			}
+	    		}
+	    		// Delete the last \n
+	    		orgs.deleteCharAt(orgs.length() - 1);
+	    		m_loggedInUser.setOrganization(orgs.toString());
+	    	}
+	    }
+	    
+	    // Show user information
+	    updateUi(UiState.SHOW_USER_INFORMATION);
+	    
+	    // TODO - Remove
 	    // Request for people in circles
-	    if(! getPeopleInCircles()) {
+	    //if(! getPeopleInCircles()) {
 	    	// TODO
 	    	// Handle Error
-	    }
+	    //}
 
 	    // Indicate that the sign in process is complete.
 	    m_loginState = LoginState.STATE_NORMAL;
@@ -543,6 +605,7 @@ public class WalmartActivity extends FragmentActivity
 	 * 
 	 */
 	private void updateUi(UiState state) {
+		Bundle bundle;
 		
 		switch(state) {
 			case SHOW_LOGIN_UI:
@@ -550,6 +613,59 @@ public class WalmartActivity extends FragmentActivity
 				removeFragment();
 				m_currentFragment = null;
 				m_signInButton.setVisibility(View.VISIBLE);
+				break;
+			
+			case SHOW_USER_INFORMATION:
+				// Chck that the activity is using the container for fragments
+				//
+				if (m_fragmentContainer != null) {
+
+					// However, if we're being restored from a previous state,
+					// then we don't need to do anything and should return or else
+					// we could end up with overlapping fragments.
+					if (m_mainBundle != null) {
+						Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
+						return;
+					}
+				}
+				
+				// If we are already showing LoggedInUserInfoFragment Fragment
+				if(m_currentFragment != null &&
+						m_currentFragment instanceof LoggedInUserInfoFragment &&
+						m_currentFragment.isFragmentAttached()) {
+					Log.d(TAG, "updateUi() - Already showing LoggedInUserInfoFragment, Nothing to update");
+					return;
+				}
+				
+				// Create an instance of LoggedInUserInfoFragment
+				LoggedInUserInfoFragment loggedInUserFragment = new LoggedInUserInfoFragment();
+				
+				// Set the User Interface Updater
+				loggedInUserFragment.setUserInterfaceUpdater(this);
+
+				// In case this activity was started with special instructions
+				// from an Intent,
+				// pass the Intent's extras to the fragment as arguments
+				bundle = getIntent().getExtras();
+				
+				if(bundle == null) {
+					bundle = new Bundle();
+				}
+				
+				// Add the LoggedInUser info to bundle to be sent to the Fragment
+				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_NAME, m_loggedInUser.getName());
+				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_LOCATION, m_loggedInUser.getLocation());
+				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_ORGANIZATION, m_loggedInUser.getOrganization());
+				loggedInUserFragment.setArguments(bundle);
+				
+				// Add the fragment to the container
+				getSupportFragmentManager().beginTransaction()
+						.add(m_fragmentContainer.getId(), loggedInUserFragment)
+						.commit();
+
+				// Update the current Fragment
+				m_currentFragment = loggedInUserFragment;
+				
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE: 
@@ -583,7 +699,7 @@ public class WalmartActivity extends FragmentActivity
 				// In case this activity was started with special instructions
 				// from an Intent,
 				// pass the Intent's extras to the fragment as arguments
-				Bundle bundle = getIntent().getExtras();
+				bundle = getIntent().getExtras();
 				
 				if(bundle == null) {
 					bundle = new Bundle();
@@ -676,5 +792,10 @@ public class WalmartActivity extends FragmentActivity
 		else {
 			Log.d(TAG, "Cannot remove current fragment because current fragment is null or is not attached");
 		}
+	}
+
+	@Override
+	public void showUserInformation() {
+		updateUi(UiState.SHOW_USER_INFORMATION);
 	}
 }
