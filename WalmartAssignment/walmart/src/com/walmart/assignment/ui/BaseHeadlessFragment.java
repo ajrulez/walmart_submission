@@ -39,6 +39,21 @@ public class BaseHeadlessFragment extends Fragment
 	}
 	
 	/**
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onResume()
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		// Update the Login US based on Fragment Name
+		//
+		if(m_uiUpdater != null) {
+			m_uiUpdater.updateLoginUi(m_fragmentName);
+		}
+	}
+	
+	/**
 	 * Method that gets called when Fragment is attached
 	 * to an Activity
 	 * 

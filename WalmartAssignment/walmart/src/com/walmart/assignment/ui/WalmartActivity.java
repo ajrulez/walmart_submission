@@ -298,11 +298,6 @@ public class WalmartActivity extends FragmentActivity
 	    		requestSignIn();
 	    	}
 	    }
-
-	    // In this sample we consider the user signed out whenever they do not have
-	    // a connection to Google Play services.
-	    // TODO
-	    //onSignedOut();
 	}
 	
 	/**
@@ -484,8 +479,6 @@ public class WalmartActivity extends FragmentActivity
 	public void onResult(LoadPeopleResult circleData) {
 		Log.v(TAG, "onResult(LoadPeopleResult) - Retrieved result for people in circles request");
 		
-		// TODO Handle Next Page
-		
 		// If the request was successful
 		if(circleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
 			// Clear existing results
@@ -650,9 +643,6 @@ public class WalmartActivity extends FragmentActivity
 				break;
 			
 			case SHOW_USER_INFORMATION:
-				m_signInButton.setVisibility(View.GONE);
-				m_signOutButton.setVisibility(View.VISIBLE);
-				
 				// Chck that the activity is using the container for fragments
 				//
 				if (m_fragmentContainer != null) {
@@ -704,9 +694,6 @@ public class WalmartActivity extends FragmentActivity
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE: 
-				m_signInButton.setVisibility(View.GONE);
-				m_signOutButton.setVisibility(View.GONE);
-				
 				// Check that the activity is using container for fragments
 				//
 				if (m_fragmentContainer != null) {
@@ -808,6 +795,7 @@ public class WalmartActivity extends FragmentActivity
 	 */
 	@Override
 	public void showLoginUi() {
+		Log.d(TAG, "showLoginUi() - Updating UI to show Login screen");
 		updateUi(UiState.SHOW_LOGIN_UI);
 	}
 	
@@ -839,6 +827,7 @@ public class WalmartActivity extends FragmentActivity
 	 */
 	@Override
 	public void showUserInformation() {
+		Log.d(TAG, "showUserInformation() - Update UI to show user information fragment");
 		updateUi(UiState.SHOW_USER_INFORMATION);
 	}
 	
@@ -847,6 +836,7 @@ public class WalmartActivity extends FragmentActivity
 	 */
 	@Override
 	public void showPeopleInCircle() {
+		Log.d(TAG, "showPeopleInCircle() - Update UI to show people in circle fragment");
 		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
 	}
 	
@@ -856,6 +846,8 @@ public class WalmartActivity extends FragmentActivity
 	 * 
 	 */
 	private void requestSignOut() {
+		Log.d(TAG, "requestSignOut() - Method to sign out of Google Plus invoked");
+		
 		Plus.AccountApi.clearDefaultAccount(m_googleApiClient);
 		m_googleApiClient.disconnect();
 		m_googleApiClient.connect();
@@ -873,5 +865,23 @@ public class WalmartActivity extends FragmentActivity
 		
 		// Update the UI
 		updateUi(UiState.SHOW_LOGIN_UI);
+	}
+	
+	/**
+	 * Method to update Sign In and Sign Out buttons
+	 * 
+	 */
+	public void updateLoginUi(String fragmentName) {
+		Log.d(TAG, "updateLoginUi() - Updating login UI for Fragment Name " + fragmentName);
+		
+		if(fragmentName.equalsIgnoreCase("PeopleInCircleFragment")) {
+			m_signInButton.setVisibility(View.GONE);
+			m_signOutButton.setVisibility(View.GONE);
+		}
+		
+		else if(fragmentName.equalsIgnoreCase("LoggedInUserInfoFragment")) {
+			m_signInButton.setVisibility(View.GONE);
+			m_signOutButton.setVisibility(View.VISIBLE);
+		}
 	}
 }
