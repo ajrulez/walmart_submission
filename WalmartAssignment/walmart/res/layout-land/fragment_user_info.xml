@@ -54,6 +54,7 @@
         android:layout_height="32dip"
         android:layout_alignBottom="@+id/textViewLocationLabel"
         android:layout_marginRight="5dip"
+        android:background="@drawable/loction_image_button"
         android:layout_alignParentRight="true"/>
         
     <TextView

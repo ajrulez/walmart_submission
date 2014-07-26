@@ -99,7 +99,6 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 		
 		// Set ImageView for Location
 		m_ivLocation = (ImageView) fragmentLayout.findViewById(R.id.imageViewMapLauncher);
-		m_ivLocation.setImageResource(R.drawable.location_icon);
 		m_ivLocation.setOnClickListener(this);
 		
 		return fragmentLayout;
