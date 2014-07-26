@@ -563,9 +563,6 @@ public class WalmartActivity extends FragmentActivity
 				
 				// Create an instance of PeopleInCircleFragment
 				PeopleInCircleFragment peopleInCircleFragment = new PeopleInCircleFragment();
-				
-				// Set the User Interface Updater
-				peopleInCircleFragment.setUserInterfaceUpdater(this);
 
 				// In case this activity was started with special instructions
 				// from an Intent,
