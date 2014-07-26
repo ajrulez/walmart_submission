@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 /**
  * This is the super class for all Fragments that
@@ -16,7 +18,8 @@ import android.util.Log;
  * a super class helps with that.
  * 
  */
-public class BaseHeadlessFragment extends Fragment {
+public class BaseHeadlessFragment extends Fragment
+								  implements OnClickListener {
 	// Current Fragment Name
 	protected String m_fragmentName = "";
 		
@@ -108,5 +111,21 @@ public class BaseHeadlessFragment extends Fragment {
 	 */
 	public boolean isFragmentAttached() {
 		return m_fragmentAttached.get();
+	}
+	
+	/**
+	 * OnClickListener - Used by Fragments
+	 * that extend this class
+	 * 
+	 * @param View - view that was clicked
+	 * 
+	 */
+	@Override
+	public void onClick(View view) {
+		// No default implementation
+		//
+		// Classes that extend this class, and that want
+		// to respond to View clicks will need to override
+		// this method
 	}
 }

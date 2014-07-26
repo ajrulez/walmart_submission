@@ -1,12 +1,22 @@
 package com.walmart.assignment.ui;
 
+import java.util.List;
+
 import com.walmart.assignment.R;
-import android.graphics.Color;
+import com.walmart.assignment.model.LoggedInUser;
+import com.walmart.assignment.model.LoggedInUser.Organization;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -15,24 +25,33 @@ import android.widget.TextView;
  *
  */
 public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
-	// TextView for name
+	// TextView - Name
 	private TextView m_tvName;
 	
-	// TextView for Location
+	// TextView - Location
 	private TextView m_tvLocation;
 	
-	// TextView for Organization
-	private TextView m_tvOrganization;
+	// ImageView - Profile Picture
+	private ImageView m_ivProfilePicture;
 	
-	// Key to retrieve name text from bundle
-	public static final String BUNDLE_KEY_USER_NAME = "key_user_name";
+	// List View for showing Organizations
+	private ListView m_lvOrganizationDetails;
 	
-	// Key to retrieve user location from bundle
-	public static final String BUNDLE_KEY_USER_LOCATION = "key_user_location";
+	// Show People in Circles
+	private Button m_btnShowPeopleInCircles;
 	
-	// Key to retrieve user organization from bundle
-	public static final String BUNDLE_KEY_USER_ORGANIZATION = "key_user_organization";
+	// ImageView for Location
+	private ImageView m_ivLocation;
 	
+	// Organization Details ListView Adapter
+	private OrganizationDetailsListAdapter m_organizationDetailsAdapter;
+	
+	// Logged-in User Data
+	private LoggedInUser m_loggedInUser;
+	
+	// Key for getting LoggedInUserData object from Bundle
+	public static final String LOGGED_IN_USER_DATA_KEY = "logged_in_user_data_key";
+
 	// Default Constructor
 	public LoggedInUserInfoFragment() {
 		m_fragmentName = "LoggedInUserInfoFragment";
@@ -55,21 +74,31 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 	public View onCreateView(LayoutInflater inflater, 
 								ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the Fragment layout
-		LinearLayout fragmentLayout = (LinearLayout) inflater.inflate(R.layout.fragment_user_info, container, false);
+		RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_user_info, container, false);
 		
-		// Set the Name TextView
-		m_tvName = (TextView) fragmentLayout.findViewById(R.id.userName);
-		m_tvName.setTextColor(Color.RED);
+		// Set the UI widgets
+		m_tvName = (TextView) fragmentLayout.findViewById(R.id.textViewNameValue);
+		m_tvLocation = (TextView) fragmentLayout.findViewById(R.id.textViewLocationValue);
+		m_ivProfilePicture = (ImageView) fragmentLayout.findViewById(R.id.profilePicture);
+		m_lvOrganizationDetails = (ListView) fragmentLayout.findViewById(R.id.organizationDetailsListView);
 		
-		// Set the Location TextView
-		m_tvLocation = (TextView) fragmentLayout.findViewById(R.id.location);
-		m_tvLocation.setTextColor(Color.BLACK);
+		// Set the list <-> list adapter
+		if(m_organizationDetailsAdapter == null) {
+			m_organizationDetailsAdapter = new OrganizationDetailsListAdapter(getActivity(), R.layout.organization_list_item_layout);
+			m_lvOrganizationDetails.setAdapter(m_organizationDetailsAdapter);
+		}
 		
-		// Set the Organization TextView
-		m_tvOrganization = (TextView) fragmentLayout.findViewById(R.id.organizations);
-		m_tvOrganization.setTextColor(Color.BLUE);
+		// Show People in Circles Button
+		m_btnShowPeopleInCircles = (Button) fragmentLayout.findViewById(R.id.findFriendsButton);
+		m_btnShowPeopleInCircles.setOnClickListener(this);
+		
+		// Set ImageView for Location
+		m_ivLocation = (ImageView) fragmentLayout.findViewById(R.id.imageViewMapLauncher);
+		m_ivLocation.setImageResource(R.drawable.location_icon);
+		m_ivLocation.setOnClickListener(this);
 		
 		return fragmentLayout;
+
 	}
 
 	/**
@@ -92,11 +121,148 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 		// If this Fragment is attached
 		if (m_fragmentAttached.get() && 
 				getArguments() != null) {
+			Log.d(m_fragmentName, "Fragment is attached and fragment has valid bundle");
 			
-			// Get the friend data from Bundle
-			m_tvName.setText(getResources().getString(R.string.nameLabel) + " " + getArguments().getString(BUNDLE_KEY_USER_NAME));
-			m_tvLocation.setText(getResources().getString(R.string.locationLabel) + " " + getArguments().getString(BUNDLE_KEY_USER_LOCATION));
-			m_tvOrganization.setText(getArguments().getString(BUNDLE_KEY_USER_ORGANIZATION));
-		}					
+			m_ivProfilePicture.setBackgroundResource(R.drawable.ic_placeholder);
+			
+			// Get loggedInUser from Bundle
+			m_loggedInUser = getArguments().getParcelable(LOGGED_IN_USER_DATA_KEY);
+
+			if(m_loggedInUser != null) {
+				Log.d(m_fragmentName, "Successfully retrieved loggedInUser from Fragment Bundle");
+				
+				m_tvName.setText(m_loggedInUser.getName());
+				m_tvLocation.setText(m_loggedInUser.getLocation());
+				
+				// Do not show Organization details list view if there are no items
+				if (m_loggedInUser.getOrganization() == null
+						|| m_loggedInUser.getOrganization().isEmpty()) {
+					m_lvOrganizationDetails.setVisibility(View.INVISIBLE);
+				} 
+				else {
+					m_lvOrganizationDetails.setVisibility(View.VISIBLE);
+
+					// Update the data
+					m_organizationDetailsAdapter.updateData(m_loggedInUser.getOrganization());
+				}
+			}
+			
+			else {
+				// TODO
+			}
+		}
+		
+		else {
+			// TODO
+		}
+	}
+	
+	/**
+	 * View Holder Class to be used
+	 * in OrganizationDetailsListAdapter Adapter
+	 *
+	 */
+	static class ViewHolder {
+		// Type
+		TextView m_tvType;
+		
+		// Name
+		TextView m_tvName;
+		
+		// Title
+		TextView m_tvTitle;
+	}
+	
+	/**
+	 * OrganizationDetailsListAdapter class extends ArrayAdapter to support custom
+	 * list view that displays Organization objects
+	 *
+	 */
+	private class OrganizationDetailsListAdapter extends ArrayAdapter<Organization> {
+		// Data - ArrayList<Organization>
+		private List<Organization> arrOrganizationDetails;
+
+		
+		// Default Constructor
+		public OrganizationDetailsListAdapter(Context context, int resource) {
+				super(context, resource);
+		}
+		
+		
+		// Update Organization Data
+		public synchronized void updateData(final List<Organization> data) {
+			Log.i(m_fragmentName, "Updating organization details list");
+			
+			try {
+				getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						arrOrganizationDetails = data;
+						notifyDataSetChanged();
+					}
+				});
+			}
+			
+			catch(Exception e) {
+				Log.e(m_fragmentName, e.getMessage());
+			}
+		}
+		
+		// getView
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder = null;
+			
+			if(convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.organization_list_item_layout, null);
+                
+                // Create a ViewHolder and store references to the children views
+                // we want to bind data to.
+                holder = new ViewHolder();
+                holder.m_tvType = (TextView) convertView.findViewById(R.id.tvOrganizationType);
+                holder.m_tvType.setTextColor(getResources().getColor(R.color.CustomGreen));
+                
+                holder.m_tvName = (TextView) convertView.findViewById(R.id.tvOrganizationName);
+                holder.m_tvName.setTextColor(getResources().getColor(R.color.DarkRed));
+                // We may want to make Organization Name auto-scroll horizontally
+                // as some organization names are too long
+                holder.m_tvName.setSelected(true);
+                
+                holder.m_tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+                holder.m_tvTitle.setTextColor(getResources().getColor(R.color.CustomBlue));
+					
+                convertView.setTag(holder);
+            } 
+			
+			else {
+				// Get the ViewHolder back to get fast access to the TextView
+				holder = (ViewHolder) convertView.getTag();
+			}
+			
+			if(arrOrganizationDetails != null && 
+					arrOrganizationDetails.size() > 0 &&
+					position < arrOrganizationDetails.size()) {
+				// Bind the data efficiently with the holder.
+				holder.m_tvType.setText(arrOrganizationDetails.get(position).getType());
+				holder.m_tvName.setText(arrOrganizationDetails.get(position).getOrganizationName());
+				holder.m_tvTitle.setText(arrOrganizationDetails.get(position).getTitle());
+			}
+           
+			return convertView;                   
+        }
+		
+		/**
+		 * getCount
+		 */
+		public int getCount() {
+			int nSize = 0;
+			
+			if(arrOrganizationDetails != null) {
+				nSize = arrOrganizationDetails.size();
+			}
+			
+			return nSize;
+		}
 	}
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+    
+    <TextView 
+        android:textSize="12.0sp"
+        android:textColor="#ff000000"
+        android:id="@+id/tvOrganizationType"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:layout_marginLeft="5dip"
+        android:textIsSelectable="false"/>
+    
+    <TextView 
+        android:textSize="12.0sp"
+        android:textColor="#ff000000"
+        android:id="@+id/tvOrganizationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_toRightOf="@+id/tvOrganizationType"
+        android:layout_alignTop="@+id/tvOrganizationType"
+        android:textIsSelectable="false"
+        android:gravity="left"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:freezesText="true"/>
+    
+    <TextView 
+        android:textSize="12.0sp"
+        android:textColor="#ff000000"
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvOrganizationName"
+        android:layout_alignLeft="@+id/tvOrganizationType"
+        android:textIsSelectable="false"
+        android:gravity="left"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:freezesText="true"/>    
+    
+</RelativeLayout>

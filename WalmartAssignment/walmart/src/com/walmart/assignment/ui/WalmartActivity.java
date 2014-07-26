@@ -18,6 +18,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.walmart.assignment.R;
 import com.walmart.assignment.interfaces.IUserInterfaceUpdater;
 import com.walmart.assignment.model.LoggedInUser;
+import com.walmart.assignment.model.LoggedInUser.Organization;
 import com.walmart.assignment.model.PersonInCircle;
 import com.walmart.assignment.utils.NetworkUtils;
 
@@ -114,7 +115,6 @@ public class WalmartActivity extends FragmentActivity
 	
 	// LoggedInUser - Current uset who is logged in
 	private LoggedInUser m_loggedInUser;
-	
 	
 	/**
 	 * Load the activity_walmart Layout, and set up the user interface
@@ -378,34 +378,42 @@ public class WalmartActivity extends FragmentActivity
 	    	
 	    	// Organization
 	    	if(currentUser.hasOrganizations()) {
-	    		final int MAX_COUNT = 3;
-	    		int currentCount = 0;
-	    		
-	    		StringBuilder orgs = new StringBuilder();
+	    		ArrayList<Organization> organizationList = new ArrayList<Organization> ();
 	    		for(Organizations org : currentUser.getOrganizations()) {
-	    			String name = "Not Available";
+	    			String orgName = "Not Available";
 	    			String title = "Unknown";
-	    			orgs.append("Organization Name: ");
+	    			String type = "N/A";
+	    			
 	    			if(org.hasName()) {
-	    				name = org.getName();
+	    				orgName = org.getName();
 	    			}
-	    			orgs.append(name);
-	    			orgs.append(" (Title: ");
-	    			if(org.hasType()) {
+	    			
+	    			if(org.hasTitle()) {
 	    				title = org.getTitle();
 	    			}
-	    			orgs.append(title);
-	    			orgs.append(")");
-	    			orgs.append("\n\n");
-	    			currentCount ++;
 	    			
-	    			if(currentCount >= MAX_COUNT) {
-	    				break;
+	    			if(org.hasType()) {
+	    				if(org.getType() == Person.Organizations.Type.SCHOOL) {
+	    					type = "School";
+	    				}
+	    				else {
+	    					type = "Work";
+	    				}
 	    			}
+	    			
+	    			// Create a new Organization object
+	    			Organization organization = new Organization();
+	    			organization.setOrganizationName(orgName);
+	    			organization.setTitle(title);
+	    			organization.setType(type);
+	    			
+	    			// Add to list of Organizations
+	    			organizationList.add(organization);
+	    			
 	    		}
-	    		// Delete the last \n
-	    		orgs.deleteCharAt(orgs.length() - 1);
-	    		m_loggedInUser.setOrganization(orgs.toString());
+
+	    		// Set organization list
+	    		m_loggedInUser.setOrganization(organizationList);
 	    	}
 	    }
 	    
@@ -652,10 +660,8 @@ public class WalmartActivity extends FragmentActivity
 					bundle = new Bundle();
 				}
 				
-				// Add the LoggedInUser info to bundle to be sent to the Fragment
-				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_NAME, m_loggedInUser.getName());
-				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_LOCATION, m_loggedInUser.getLocation());
-				bundle.putString(LoggedInUserInfoFragment.BUNDLE_KEY_USER_ORGANIZATION, m_loggedInUser.getOrganization());
+				// Add the LoggedInUser object to bundle to be sent to the Fragment
+				bundle.putParcelable(LoggedInUserInfoFragment.LOGGED_IN_USER_DATA_KEY, m_loggedInUser);
 				loggedInUserFragment.setArguments(bundle);
 				
 				// Add the fragment to the container

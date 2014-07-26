@@ -11,5 +11,8 @@
     <string name="error">Error</string>
     <string name="nameLabel">Name: </string>
     <string name="locationLabel">Location: </string>
+    <string name="organizationLabel">Organizations: </string>
+    <string name="peopleInCircleLabel">Search People in Circles</string>
+    <string name="placeHolder">Placeholder</string>
 
 </resources>
