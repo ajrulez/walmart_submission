@@ -3,10 +3,14 @@ package com.walmart.assignment.ui;
 import java.util.List;
 
 import com.walmart.assignment.R;
+import com.walmart.assignment.interfaces.IProfilePictureDownloadReceiver;
 import com.walmart.assignment.model.LoggedInUser;
 import com.walmart.assignment.model.LoggedInUser.Organization;
+import com.walmart.assignment.tasks.ProfilePictureDownloadTask;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +28,8 @@ import android.widget.TextView;
  * on the UI of the app
  *
  */
-public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
+public class LoggedInUserInfoFragment extends BaseHeadlessFragment
+									  implements IProfilePictureDownloadReceiver {
 	// TextView - Name
 	private TextView m_tvName;
 	
@@ -123,6 +128,7 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 				getArguments() != null) {
 			Log.d(m_fragmentName, "Fragment is attached and fragment has valid bundle");
 			
+			// Show the Placeholder
 			m_ivProfilePicture.setBackgroundResource(R.drawable.ic_placeholder);
 			
 			// Get loggedInUser from Bundle
@@ -130,6 +136,13 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 
 			if(m_loggedInUser != null) {
 				Log.d(m_fragmentName, "Successfully retrieved loggedInUser from Fragment Bundle");
+				
+				// Get the URI for display picture and download it
+				if(m_loggedInUser.getDisplayPictureUri() != null &&
+						m_loggedInUser.getDisplayPictureUri().length() > 0) {
+					ProfilePictureDownloadTask pictureDownloadTask = new ProfilePictureDownloadTask(this);
+					pictureDownloadTask.execute(new String[] {m_loggedInUser.getDisplayPictureUri()});
+				}
 				
 				m_tvName.setText(m_loggedInUser.getName());
 				m_tvLocation.setText(m_loggedInUser.getLocation());
@@ -209,6 +222,7 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 		}
 		
 		// getView
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder = null;
@@ -263,6 +277,24 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment {
 			}
 			
 			return nSize;
+		}
+	}
+
+	/**
+	 * Callback that is invoked when Profile Image is downloaded
+	 * from URI
+	 * 
+	 * This method will then update the ImageVive
+	 * 
+	 */
+	@Override
+	public void onProfilePictureDownloaded(Bitmap image) {
+		if(image == null) {
+			m_ivProfilePicture.setBackgroundResource(R.drawable.ic_placeholder);
+		}
+		
+		else {
+			m_ivProfilePicture.setImageBitmap(image);
 		}
 	}
 }

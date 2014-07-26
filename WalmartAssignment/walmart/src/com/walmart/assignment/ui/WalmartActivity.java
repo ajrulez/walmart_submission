@@ -376,6 +376,16 @@ public class WalmartActivity extends FragmentActivity
 	    		m_loggedInUser.setName(currentUser.getName().getGivenName() + " " + currentUser.getName().getFamilyName());
 	    	}
 	    	
+	    	// Display Image URI
+	    	if(currentUser.hasImage()) {
+	    		m_loggedInUser.setDisplayPictureUri(currentUser.getImage().getUrl());
+	    	}
+	    	
+	    	// If display image is not available, user COver Photo
+	    	else if(currentUser.hasCover()) {
+	    		m_loggedInUser.setDisplayPictureUri(currentUser.getCover().getCoverPhoto().getUrl());
+	    	}
+	    	
 	    	// Organization
 	    	if(currentUser.hasOrganizations()) {
 	    		ArrayList<Organization> organizationList = new ArrayList<Organization> ();
