@@ -28,6 +28,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -35,6 +36,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.location.Location;
+import android.location.LocationListener;
 
 public class WalmartActivity extends FragmentActivity
 							 implements ConnectionCallbacks, // To receive Connection related callback from Google Play Services
@@ -113,12 +116,27 @@ public class WalmartActivity extends FragmentActivity
 		// People in Circle
 		SHOW_PEOPLE_IN_CIRCLE,
 		
+		// User Location
+		SHOW_USERS_LOCATION,
+		
 		// MAX
 		MAX
 	}
 	
 	// LoggedInUser - Current uset who is logged in
 	private LoggedInUser m_loggedInUser;
+	
+	// User's Current Location
+    //
+    // User Location Lat - Per LocationManagaer
+    private String m_userLocationMgrLat;
+    
+    // User Location lng - Per LocationManager
+    private String m_userLocationMgrLng;
+    
+    // LocationManager
+    private LocationManager m_locationMgr;
+    
 	
 	/**
 	 * Load the activity_walmart Layout, and set up the user interface
@@ -169,6 +187,9 @@ public class WalmartActivity extends FragmentActivity
         		updateUi(UiState.SHOW_USER_INFORMATION);
         	}
         }
+        
+		// Get LocationManager
+		m_locationMgr = (LocationManager)getSystemService(LOCATION_SERVICE);
     }
 
     /**
@@ -183,6 +204,43 @@ public class WalmartActivity extends FragmentActivity
 		Log.v(TAG, "onStart() - Request Google Play Services to connect the user");
 		// Request to connect Google Play Services
 		m_googleApiClient.connect();
+	}
+	
+	/**
+	 * Override onResume to listen for location
+	 * updates
+	 * 
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		// Register for location updates from LocationManager
+		// Chances are this app will be tested while indoors, so
+		// I have decided to use NETWORK_PROVIDER instead of GPS_PROVIDER
+		//
+		// Update location every 5 minutes = 1000 ms * 60 = 1 minute * 5 = 5 minutes
+		//
+		Log.d(TAG, "onResume() - Register for location updates from LocationManager");
+		m_locationMgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (1000*60*5), 1000, onLocationChange);
+	}
+	
+	/**
+	 * Override onPause to unregister location
+	 * update notification listener
+	 * 
+	 */
+	/**
+	 * Method to override default Activity Lifecycle
+	 * onPause
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		// Unregister for location updates from LocationManager
+		Log.d(TAG, "onPause() - Request LocationManager to unregister location updates");
+		m_locationMgr.removeUpdates(onLocationChange);
 	}
 
 	/**
@@ -744,6 +802,15 @@ public class WalmartActivity extends FragmentActivity
 				m_currentFragment = peopleInCircleFragment;
 				break;
 			
+			case SHOW_USERS_LOCATION:
+				Log.d(TAG, "Attempting to update the UI to user's location on Map");
+				Intent launchMapActivity = new Intent(WalmartActivity.this, MapActivity.class);
+				launchMapActivity.putExtra(MapActivity.INTENT_LOCATION_LAT_KEY, m_userLocationMgrLat);
+				launchMapActivity.putExtra(MapActivity.INTENT_LOCATION_LNG_KEY, m_userLocationMgrLng);
+					
+				startActivity(launchMapActivity);
+				break;
+				
 			default:
 				// Nothing to do
 				break;
@@ -884,4 +951,59 @@ public class WalmartActivity extends FragmentActivity
 			m_signOutButton.setVisibility(View.VISIBLE);
 		}
 	}
+	
+	/************************** Location Related Functionality *************************************/
+	
+	/**
+	 * This method is used to user's current location
+	 * on a Map
+	 * 
+	 */
+	@Override
+	public void showLocation() {
+		Log.d(TAG, "showLocation() - Updating UI to show user's current location");
+		
+		if(m_userLocationMgrLat != null &&
+				m_userLocationMgrLat.length() > 0 &&
+				m_userLocationMgrLng != null &&
+				m_userLocationMgrLng.length() > 0) {
+			Log.d(TAG, "We have user's most recent current location available. Use that location to show in the Map");
+			
+			// Update the UI
+			this.updateUi(UiState.SHOW_USERS_LOCATION);
+		}
+		
+		else {
+			String title = getResources().getString(R.string.error);
+			String message = getResources().getString(R.string.locationUnavailable);
+			showAlert(title, message);
+		}
+	}
+	
+	/**
+	 * Location Listener to listen for location change notifications
+	 * 
+	 */
+	public LocationListener onLocationChange = new LocationListener() {
+	    public void onLocationChanged(Location location) {
+	    	Log.d(TAG, "Received location update from LocationManager");
+	    	if(location != null) {
+	    		m_userLocationMgrLat = String.valueOf(location.getLatitude());
+	    		m_userLocationMgrLng = String.valueOf(location.getLongitude());
+	    	}
+	    }
+	    
+	    public void onProviderDisabled(String provider) {
+	      // required for interface, not used
+	    }
+	    
+	    public void onProviderEnabled(String provider) {
+	      // required for interface, not used
+	    }
+	    
+	    public void onStatusChanged(String provider, int status,
+	                                  Bundle extras) {
+	      // required for interface, not used
+	    }
+	 };
 }

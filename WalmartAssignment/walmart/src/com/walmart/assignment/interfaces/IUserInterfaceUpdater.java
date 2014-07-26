@@ -25,6 +25,9 @@ public interface IUserInterfaceUpdater {
 	// Show People in Circle
 	public void showPeopleInCircle();
 	
+	// Show User's Location
+	public void showLocation();
+	
 	// Update Login UI
 	public void updateLoginUi(String fragmentName);
 }

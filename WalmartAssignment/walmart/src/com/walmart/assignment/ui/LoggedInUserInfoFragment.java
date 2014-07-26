@@ -313,6 +313,15 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 			}
 		}
 		
+		// If the user tapped on
+		// Show User's Location on Map button
+		else if(v == m_ivLocation) {
+			// Tell the UI Updater to update the View
+			if(m_uiUpdater != null) {
+				m_uiUpdater.showLocation();
+			}
+		}
+		
 		// Since we haven't consumed the Click, let super class
 		// try to handle it
 		else {

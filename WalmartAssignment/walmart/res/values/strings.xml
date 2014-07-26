@@ -15,5 +15,6 @@
     <string name="peopleInCircleLabel">Search People in Circles</string>
     <string name="placeHolder">Placeholder</string>
     <string name="signOutLabel">Sign Out</string>
-
+	<string name="locationUnavailable">Current location of logged in user is not available.</string>
+    
 </resources>
