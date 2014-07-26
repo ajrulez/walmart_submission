@@ -154,7 +154,6 @@ public class WalmartActivity extends FragmentActivity
         	m_loginState = LoginState.values()[nLoginState];
         	
         	// If we are already logged in and we have network
-        	// TODO
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
         		updateUi(UiState.SHOW_USER_INFORMATION);
@@ -365,23 +364,31 @@ public class WalmartActivity extends FragmentActivity
 	    
 	    if(currentUser != null) {
 	    	m_loggedInUser = new LoggedInUser();
+	    	String  location = "Not Available";
+	    	String name = "Not Disclosed";
 	    	
 	    	// Location
 	    	if(currentUser.hasCurrentLocation()) {
-	    		m_loggedInUser.setLocation(currentUser.getCurrentLocation());
+	    		location = currentUser.getCurrentLocation();
 	    	}
+	    	
+	    	// Set location
+	    	m_loggedInUser.setLocation(location);
 	    	
 	    	// Name
 	    	if(currentUser.hasName()) {
-	    		m_loggedInUser.setName(currentUser.getName().getGivenName() + " " + currentUser.getName().getFamilyName());
+	    		name = currentUser.getName().getGivenName() + " " + currentUser.getName().getFamilyName();
 	    	}
+	    	
+	    	// Set name
+	    	m_loggedInUser.setName(name);
 	    	
 	    	// Display Image URI
 	    	if(currentUser.hasImage()) {
 	    		m_loggedInUser.setDisplayPictureUri(currentUser.getImage().getUrl());
 	    	}
 	    	
-	    	// If display image is not available, user COver Photo
+	    	// If display image is not available, user Cover Photo
 	    	else if(currentUser.hasCover()) {
 	    		m_loggedInUser.setDisplayPictureUri(currentUser.getCover().getCoverPhoto().getUrl());
 	    	}
@@ -595,8 +602,6 @@ public class WalmartActivity extends FragmentActivity
 														+ "resolved: "
 														+ m_signInErrorCode);
 										m_loginState = LoginState.STATE_NORMAL;
-										// TODO
-										// mStatus.setText(R.string.status_signed_out);
 									}
 								}).create();
 			}

@@ -96,10 +96,10 @@ public class LoggedInUser implements Parcelable {
 	}
 	
 	// Location
-	private String m_location = "Not Available";
+	private String m_location;
 	
 	// Name
-	private String m_name = "Not Disclosed";
+	private String m_name;
 	
 	// Profile Picture URI
 	private String m_displayPictureUri;
