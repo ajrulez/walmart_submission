@@ -33,6 +33,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class WalmartActivity extends FragmentActivity
@@ -88,6 +89,9 @@ public class WalmartActivity extends FragmentActivity
 	// Sign-In Button - UI Provided by Google Play Services
 	private SignInButton m_signInButton;
 	
+	// Sign Out Button
+	private Button m_signOutButton;
+	
 	// Fragment Container
 	protected RelativeLayout m_fragmentContainer;
 	
@@ -138,7 +142,13 @@ public class WalmartActivity extends FragmentActivity
         m_signInButton = (SignInButton) findViewById(R.id.sign_in_button);
  
         // Set the onClickListener for Sign-In button
-        m_signInButton.setOnClickListener(this);;
+        m_signInButton.setOnClickListener(this);
+        
+        // Sign Out Button
+        m_signOutButton = (Button) findViewById(R.id.sign_out_button);
+        
+        // Set the onClickListener for Sign Out button
+        m_signOutButton.setOnClickListener(this);
 
         // Create a new List for people
         m_peopleList = new ArrayList<PersonInCircle>();
@@ -554,6 +564,12 @@ public class WalmartActivity extends FragmentActivity
 					Log.d(TAG, "onClick() - Sign-in button tapped");
 					requestSignIn();
 					break;
+					
+				// Sign Out button clicked
+				case R.id.sign_out_button:
+					Log.d(TAG, "onClick() - Sign out button tapped");
+					requestSignOut();
+					break;
 			
 				default:
 					// Nothing to do
@@ -630,9 +646,13 @@ public class WalmartActivity extends FragmentActivity
 				removeFragment();
 				m_currentFragment = null;
 				m_signInButton.setVisibility(View.VISIBLE);
+				m_signOutButton.setVisibility(View.GONE);
 				break;
 			
 			case SHOW_USER_INFORMATION:
+				m_signInButton.setVisibility(View.GONE);
+				m_signOutButton.setVisibility(View.VISIBLE);
+				
 				// Chck that the activity is using the container for fragments
 				//
 				if (m_fragmentContainer != null) {
@@ -684,6 +704,9 @@ public class WalmartActivity extends FragmentActivity
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE: 
+				m_signInButton.setVisibility(View.GONE);
+				m_signOutButton.setVisibility(View.GONE);
+				
 				// Check that the activity is using container for fragments
 				//
 				if (m_fragmentContainer != null) {
@@ -825,5 +848,30 @@ public class WalmartActivity extends FragmentActivity
 	@Override
 	public void showPeopleInCircle() {
 		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+	}
+	
+	/**
+	 * Method to sign out and revoke user
+	 * access on this device until they sign in
+	 * 
+	 */
+	private void requestSignOut() {
+		Plus.AccountApi.clearDefaultAccount(m_googleApiClient);
+		m_googleApiClient.disconnect();
+		m_googleApiClient.connect();
+		
+		/** Not sure if we want to revoke the access
+		 * on this device on sign out. If we want to, 
+		 * here's the code
+		 * 
+		 * 
+		 * Plus.AccountApi.clearDefaultAccount(m_googleApiClient);
+		 * Plus.AccountApi.revokeAccessAndDisconnect(m_googleApiClient);
+		 * m_googleApiClient = fetchGoogleApiClient();
+		 * m_googleApiClient.connect();
+		 */
+		
+		// Update the UI
+		updateUi(UiState.SHOW_LOGIN_UI);
 	}
 }

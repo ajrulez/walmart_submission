@@ -87,8 +87,9 @@
         android:textColor="#FFFFFF"
         android:background="@color/GoogleRed"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dip"
+        android:layout_height="40dip"
+        android:paddingLeft ="20dip"
+        android:paddingRight ="20dip"
         android:layout_marginBottom="5dip"/>
         
     <ListView

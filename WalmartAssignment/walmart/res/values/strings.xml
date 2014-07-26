@@ -14,5 +14,6 @@
     <string name="organizationLabel">Organizations: </string>
     <string name="peopleInCircleLabel">Search People in Circles</string>
     <string name="placeHolder">Placeholder</string>
+    <string name="signOutLabel">Sign Out</string>
 
 </resources>

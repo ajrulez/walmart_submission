@@ -12,6 +12,9 @@
     <Button
         android:id="@+id/clearCacheButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:background="@color/GoogleRed"
+        android:layout_margin="6dip"
         android:text="@string/clearCache" />
 </LinearLayout>
