@@ -145,7 +145,6 @@ public class WalmartActivity extends FragmentActivity
         	m_loginState = LoginState.values()[nLoginState];
         	
         	// If we are already logged in and we have network
-        	// TODO
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
         		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
@@ -280,11 +279,6 @@ public class WalmartActivity extends FragmentActivity
 	    		requestSignIn();
 	    	}
 	    }
-
-	    // In this sample we consider the user signed out whenever they do not have
-	    // a connection to Google Play services.
-	    // TODO
-	    //onSignedOut();
 	}
 	
 	/**
@@ -352,10 +346,7 @@ public class WalmartActivity extends FragmentActivity
 	    m_signInButton.setVisibility(View.GONE);
 	    
 	    // Request for people in circles
-	    if(! getPeopleInCircles()) {
-	    	// TODO
-	    	// Handle Error
-	    }
+	    getPeopleInCircles();
 
 	    // Indicate that the sign in process is complete.
 	    m_loginState = LoginState.STATE_NORMAL;
@@ -390,8 +381,6 @@ public class WalmartActivity extends FragmentActivity
 	@Override
 	public void onResult(LoadPeopleResult circleData) {
 		Log.v(TAG, "onResult(LoadPeopleResult) - Retrieved result for people in circles request");
-		
-		// TODO Handle Next Page
 		
 		// If the request was successful
 		if(circleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
@@ -521,8 +510,6 @@ public class WalmartActivity extends FragmentActivity
 														+ "resolved: "
 														+ m_signInErrorCode);
 										m_loginState = LoginState.STATE_NORMAL;
-										// TODO
-										// mStatus.setText(R.string.status_signed_out);
 									}
 								}).create();
 			}
