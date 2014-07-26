@@ -156,6 +156,7 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 					m_lvOrganizationDetails.setVisibility(View.VISIBLE);
 
 					// Update the data
+					m_lvOrganizationDetails.setAdapter(m_organizationDetailsAdapter);
 					m_organizationDetailsAdapter.updateData(m_loggedInUser.getOrganization());
 				}
 			}
