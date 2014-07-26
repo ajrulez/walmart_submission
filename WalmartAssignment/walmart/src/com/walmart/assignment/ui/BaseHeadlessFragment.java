@@ -64,7 +64,10 @@ public class BaseHeadlessFragment extends Fragment
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		
-		// Set the attached flag ot true
+		// Get and Set the UI Updater
+		m_uiUpdater = (IUserInterfaceUpdater) getActivity();
+		
+		// Set the attached flag to true
 		m_fragmentAttached.compareAndSet(false, true);
 		Log.d(m_fragmentName, "Attached to Activity");
 	}
@@ -92,18 +95,6 @@ public class BaseHeadlessFragment extends Fragment
 	 */
 	public String getFragmentName() {
 		return m_fragmentName;
-	}
-	
-	/**
-	 * Method to set IUserInterfaceUpdater for this
-	 * Fragment
-	 * 
-	 * @param uiInterfaceUpdater - An object that implements
-	 * 		IUserInterfaceUpdater interface
-	 * 
-	 */
-	public void setUserInterfaceUpdater(IUserInterfaceUpdater uiUpdater) {
-		m_uiUpdater = uiUpdater;
 	}
 	
 	/**
