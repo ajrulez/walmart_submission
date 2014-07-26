@@ -157,7 +157,7 @@ public class WalmartActivity extends FragmentActivity
         	// TODO
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
-        		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+        		updateUi(UiState.SHOW_USER_INFORMATION);
         	}
         }
     }
@@ -427,15 +427,11 @@ public class WalmartActivity extends FragmentActivity
 	    	}
 	    }
 	    
+	    // Request for people in circles
+	    getPeopleInCircles();
+	    
 	    // Show user information
 	    updateUi(UiState.SHOW_USER_INFORMATION);
-	    
-	    // TODO - Remove
-	    // Request for people in circles
-	    //if(! getPeopleInCircles()) {
-	    	// TODO
-	    	// Handle Error
-	    //}
 
 	    // Indicate that the sign in process is complete.
 	    m_loginState = LoginState.STATE_NORMAL;
@@ -502,8 +498,6 @@ public class WalmartActivity extends FragmentActivity
 			finally {
 				people.close();
 			}
-			
-			updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
 		}
 		
 		else {
@@ -676,7 +670,7 @@ public class WalmartActivity extends FragmentActivity
 				
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
-						.add(m_fragmentContainer.getId(), loggedInUserFragment)
+						.replace(m_fragmentContainer.getId(), loggedInUserFragment)
 						.commit();
 
 				// Update the current Fragment
@@ -727,7 +721,8 @@ public class WalmartActivity extends FragmentActivity
 
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
-						.add(m_fragmentContainer.getId(), peopleInCircleFragment)
+						.replace(m_fragmentContainer.getId(), peopleInCircleFragment)
+						.addToBackStack(null)
 						.commit();
 
 				// Update the current Fragment
@@ -810,8 +805,20 @@ public class WalmartActivity extends FragmentActivity
 		}
 	}
 
+	/**
+	 * Show user information View
+	 * 
+	 */
 	@Override
 	public void showUserInformation() {
 		updateUi(UiState.SHOW_USER_INFORMATION);
+	}
+	
+	/**
+	 * Show people in user's circle View
+	 */
+	@Override
+	public void showPeopleInCircle() {
+		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
 	}
 }

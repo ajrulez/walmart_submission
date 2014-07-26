@@ -21,4 +21,7 @@ public interface IUserInterfaceUpdater {
 	
 	// Method to show UserInformation
 	public void showUserInformation();
+	
+	// Show People in Circle
+	public void showPeopleInCircle();
 }

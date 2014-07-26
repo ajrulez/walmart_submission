@@ -297,4 +297,25 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 			m_ivProfilePicture.setImageBitmap(image);
 		}
 	}
+	
+	/**
+	 * OnClickListener
+	 */
+	@Override
+	public void onClick(View v) {
+		// If the user tapped on
+		// Show People in Circle button
+		if(v == m_btnShowPeopleInCircles) {
+			// Tell the UI Updater to update the View
+			if(m_uiUpdater != null) {
+				m_uiUpdater.showPeopleInCircle();
+			}
+		}
+		
+		// Since we haven't consumed the Click, let super class
+		// try to handle it
+		else {
+			super.onClick(v);
+		}
+	}
 }
