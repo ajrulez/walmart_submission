@@ -390,6 +390,28 @@ public class WalmartActivity extends FragmentActivity
 	}
 	
 	/**
+	 * Method to Handle Back Press
+	 * 
+	 */
+	@Override
+    public void onBackPressed() {
+    	if(getSupportFragmentManager().getBackStackEntryCount() <= 0) {
+    		if(m_currentFragment != null &&
+    				m_currentFragment instanceof PeopleInCircleFragment) {
+    			updateUi(UiState.SHOW_USER_INFORMATION);
+    		}
+    		
+    		else {
+    			super.onBackPressed();
+    		}
+    	}
+    	
+    	else {
+    		super.onBackPressed();
+    	}
+	}
+    	
+	/**
 	 * Resolve any connection errors that the user is experiencing or
 	 * initiate a sign-in request
 	 * 
@@ -808,7 +830,7 @@ public class WalmartActivity extends FragmentActivity
 				
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
-						.replace(m_fragmentContainer.getId(), loggedInUserFragment)
+						.replace(m_fragmentContainer.getId(), loggedInUserFragment, LoggedInUserInfoFragment.FRAGMENT_NAME)
 						.commit();
 
 				// Update the current Fragment
@@ -835,7 +857,7 @@ public class WalmartActivity extends FragmentActivity
 				
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
-						.replace(m_fragmentContainer.getId(), peopleInCircleFragment)
+						.replace(m_fragmentContainer.getId(), peopleInCircleFragment, PeopleInCircleFragment.FRAGMENT_NAME)
 						.commit();
 
 				// Update the current Fragment
