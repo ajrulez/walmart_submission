@@ -1,8 +1,6 @@
 package com.walmart.assignment.ui;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
@@ -31,7 +29,6 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
