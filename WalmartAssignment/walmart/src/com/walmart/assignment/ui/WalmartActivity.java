@@ -53,6 +53,15 @@ public class WalmartActivity extends FragmentActivity
 	// Key (String) for saving LoginState
 	private static final String SAVED_LOGIN_STATE = "saved_login_state";
 	
+	// Key (String) for saving LoggedInUser
+	private static final String SAVED_USER_INFORMATION = "saved_user_information";
+	
+	// Key (String) for saving PersonInCircle List
+	private static final String SAVED_CIRCLE_INFORMATION = "saved_circle_information";
+	
+	// Key (String) for saving Last Fragment's Name
+	private static final String SAVED_LAST_FRAGMENT = "saved_last_fragment";
+	
 	// Enum for Signed In State
 	private static enum LoginState {
 		// Normal
@@ -184,7 +193,20 @@ public class WalmartActivity extends FragmentActivity
         	// If we are already logged in and we have network
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
-        		updateUi(UiState.SHOW_USER_INFORMATION);
+        		
+        		// Don't update the UI here. UI will get updated
+        		// upon successful connection. 
+        		//updateUi(UiState.SHOW_USER_INFORMATION);
+        	}
+        	
+        	// Get saved People in Circle's List
+        	if(savedInstanceState.containsKey(SAVED_CIRCLE_INFORMATION)) {
+        		m_peopleList = savedInstanceState.getParcelableArrayList(SAVED_CIRCLE_INFORMATION);
+        	}
+        	
+        	// Get saved Logged-In User Information
+        	if(savedInstanceState.containsKey(SAVED_USER_INFORMATION)) {
+        		m_loggedInUser = savedInstanceState.getParcelable(SAVED_USER_INFORMATION);
         	}
         }
         
@@ -269,6 +291,17 @@ public class WalmartActivity extends FragmentActivity
 		
 		// Save LoginState enum's int value
 		outState.putInt(SAVED_LOGIN_STATE, m_loginState.ordinal());
+		
+		// Save User Information
+		outState.putParcelable(SAVED_USER_INFORMATION, m_loggedInUser);
+		
+		// Save Circle Information
+		outState.putParcelableArrayList(SAVED_CIRCLE_INFORMATION, m_peopleList);
+		
+		// Save Last Fragment's Name
+		if(m_currentFragment != null) {
+			outState.putString(SAVED_LAST_FRAGMENT, m_currentFragment.getFragmentName());
+		}
 	}
 	
 	/**
@@ -500,8 +533,39 @@ public class WalmartActivity extends FragmentActivity
 	    // Request for people in circles
 	    getPeopleInCircles();
 	    
-	    // Show user information
-	    updateUi(UiState.SHOW_USER_INFORMATION);
+	    // Get previous fragment from the bundle, if any
+	    // and update the UI to show that Fragment
+	    if(m_mainBundle != null) {
+	    	String lastFragmentName = m_mainBundle.getString(SAVED_LAST_FRAGMENT);
+	    	if(lastFragmentName != null &&
+	    			lastFragmentName.length() > 0) {
+	    		Log.d(TAG, "onConnected() - Restoring from bundle - Last Fragment Name is: " + lastFragmentName);
+	    		
+	    		// If last fragment is user info fragment
+	    		if(lastFragmentName.equalsIgnoreCase(LoggedInUserInfoFragment.FRAGMENT_NAME)) {
+	    			updateUi(UiState.SHOW_USER_INFORMATION);
+	    		}
+	    		
+	    		// If last fragment is people in circles
+	    		else if(lastFragmentName.equalsIgnoreCase(PeopleInCircleFragment.FRAGMENT_NAME)) {
+	    			updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+	    		}
+	    	}
+	    	
+	    	// No last fragment name saved, show user information
+	    	else {
+	    		Log.d(TAG, "onConnected() - Restoring from bundle - No last fragment stored, show user information");
+	    		updateUi(UiState.SHOW_USER_INFORMATION);
+	    	}
+	    }
+	    
+	    // No saved bundle, show user information
+	    //
+	    else {
+	    	Log.d(TAG, "onConnected() - No bundle stored, show user information");
+	    	// Show user information
+	    	updateUi(UiState.SHOW_USER_INFORMATION);
+	    }
 
 	    // Indicate that the sign in process is complete.
 	    m_loginState = LoginState.STATE_NORMAL;
@@ -701,7 +765,7 @@ public class WalmartActivity extends FragmentActivity
 				break;
 			
 			case SHOW_USER_INFORMATION:
-				// Chck that the activity is using the container for fragments
+				// Check that the activity is using the container for fragments
 				//
 				if (m_fragmentContainer != null) {
 
@@ -785,7 +849,7 @@ public class WalmartActivity extends FragmentActivity
 				// Add the PeopleInCircle list to bundle to be sent to the Fragment
 				bundle.putParcelableArrayList(PeopleInCircleFragment.PEOPLE_IN_CIRCLE_DATA_KEY, m_peopleList);
 				peopleInCircleFragment.setArguments(bundle);
-
+				
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
 						.replace(m_fragmentContainer.getId(), peopleInCircleFragment)
@@ -935,12 +999,12 @@ public class WalmartActivity extends FragmentActivity
 	public void updateLoginUi(String fragmentName) {
 		Log.d(TAG, "updateLoginUi() - Updating login UI for Fragment Name " + fragmentName);
 		
-		if(fragmentName.equalsIgnoreCase("PeopleInCircleFragment")) {
+		if(fragmentName.equalsIgnoreCase(PeopleInCircleFragment.FRAGMENT_NAME)) {
 			m_signInButton.setVisibility(View.GONE);
 			m_signOutButton.setVisibility(View.GONE);
 		}
 		
-		else if(fragmentName.equalsIgnoreCase("LoggedInUserInfoFragment")) {
+		else if(fragmentName.equalsIgnoreCase(LoggedInUserInfoFragment.FRAGMENT_NAME)) {
 			m_signInButton.setVisibility(View.GONE);
 			m_signOutButton.setVisibility(View.VISIBLE);
 		}
