@@ -45,6 +45,9 @@ public class WalmartActivity extends FragmentActivity
 	// Key (String) for saving LoginState
 	private static final String SAVED_LOGIN_STATE = "saved_login_state";
 	
+	// Key (String) for saving PersonInCircle List
+	private static final String SAVED_CIRCLE_INFORMATION = "saved_circle_information";
+	
 	// Enum for Signed In State
 	private static enum LoginState {
 		// Normal
@@ -141,13 +144,27 @@ public class WalmartActivity extends FragmentActivity
         if(savedInstanceState != null) {
         	Log.d(TAG, "onCreate() - Called on recreation, restore connection state from Bundle");
         	
+        	// Get saved login state
         	int nLoginState = savedInstanceState.getInt(SAVED_LOGIN_STATE, LoginState.STATE_NORMAL.ordinal());
         	m_loginState = LoginState.values()[nLoginState];
+        	
+        	// Get saved People in Circle list
+        	if(savedInstanceState.containsKey(SAVED_CIRCLE_INFORMATION)) {
+        		m_peopleList = savedInstanceState.getParcelableArrayList(SAVED_CIRCLE_INFORMATION);
+        	}
         	
         	// If we are already logged in and we have network
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
-        		updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+        		
+        		if(m_peopleList != null && 
+        				m_peopleList.size() > 0) {
+        			updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+        		}
+        		
+        		else {
+        			updateUi(UiState.SHOW_LOGIN_UI);
+        		}
         	}
         }
     }
@@ -192,6 +209,9 @@ public class WalmartActivity extends FragmentActivity
 		
 		// Save LoginState enum's int value
 		outState.putInt(SAVED_LOGIN_STATE, m_loginState.ordinal());
+		
+		// Save Circle Information
+		outState.putParcelableArrayList(SAVED_CIRCLE_INFORMATION, m_peopleList);
 	}
 	
 	/**
@@ -540,19 +560,6 @@ public class WalmartActivity extends FragmentActivity
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE: 
-				// Check that the activity is using container for fragments
-				//
-				if (m_fragmentContainer != null) {
-
-					// However, if we're being restored from a previous state,
-					// then we don't need to do anything and should return or else
-					// we could end up with overlapping fragments.
-					if (m_mainBundle != null) {
-						Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
-						return;
-					}
-				}
-				
 				// If we are already showing PeopleInCircleFragment Fragment
 				if(m_currentFragment != null &&
 						m_currentFragment instanceof PeopleInCircleFragment &&
