@@ -765,19 +765,6 @@ public class WalmartActivity extends FragmentActivity
 				break;
 			
 			case SHOW_USER_INFORMATION:
-				// Check that the activity is using the container for fragments
-				//
-				if (m_fragmentContainer != null) {
-
-					// However, if we're being restored from a previous state,
-					// then we don't need to do anything and should return or else
-					// we could end up with overlapping fragments.
-					if (m_mainBundle != null) {
-						Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
-						return;
-					}
-				}
-				
 				// If we are already showing LoggedInUserInfoFragment Fragment
 				if(m_currentFragment != null &&
 						m_currentFragment instanceof LoggedInUserInfoFragment &&
@@ -812,20 +799,7 @@ public class WalmartActivity extends FragmentActivity
 				
 				break;
 				
-			case SHOW_PEOPLE_IN_CIRCLE: 
-				// Check that the activity is using container for fragments
-				//
-				if (m_fragmentContainer != null) {
-
-					// However, if we're being restored from a previous state,
-					// then we don't need to do anything and should return or else
-					// we could end up with overlapping fragments.
-					if (m_mainBundle != null) {
-						Log.e(TAG, "updateUi() - UI cannot be updated because mainBundle of the app is not null");
-						return;
-					}
-				}
-				
+			case SHOW_PEOPLE_IN_CIRCLE:
 				// If we are already showing PeopleInCircleFragment Fragment
 				if(m_currentFragment != null &&
 						m_currentFragment instanceof PeopleInCircleFragment &&
