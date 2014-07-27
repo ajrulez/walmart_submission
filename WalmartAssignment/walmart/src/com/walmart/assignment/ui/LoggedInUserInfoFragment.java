@@ -30,6 +30,9 @@ import android.widget.TextView;
  */
 public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 									  implements IProfilePictureDownloadReceiver {
+	// Fragment Name
+	public static final String FRAGMENT_NAME = "LoggedInUserInfoFragment";
+	
 	// TextView - Name
 	private TextView m_tvName;
 	
@@ -59,7 +62,7 @@ public class LoggedInUserInfoFragment extends BaseHeadlessFragment
 
 	// Default Constructor
 	public LoggedInUserInfoFragment() {
-		m_fragmentName = "LoggedInUserInfoFragment";
+		m_fragmentName = LoggedInUserInfoFragment.FRAGMENT_NAME;
 	}
 	
 	/**

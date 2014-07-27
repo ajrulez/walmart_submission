@@ -29,6 +29,9 @@ import android.widget.ListView;
  * 
  */
 public class PeopleInCircleFragment extends BaseHeadlessFragment {
+	// Fragment Name
+	public static final String FRAGMENT_NAME = "PeopleInCircleFragment";
+	
 	// List View for showing People in Circle
 	private ListView m_lvFriendsList;
 	
@@ -43,7 +46,7 @@ public class PeopleInCircleFragment extends BaseHeadlessFragment {
 	
 	// Default Constructor
 	public PeopleInCircleFragment() {
-		m_fragmentName = "PeopleInCircleFragment";
+		m_fragmentName = PeopleInCircleFragment.FRAGMENT_NAME;
 	}
 	
 	/**
