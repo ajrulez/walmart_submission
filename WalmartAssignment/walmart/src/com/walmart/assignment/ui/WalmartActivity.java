@@ -586,7 +586,7 @@ public class WalmartActivity extends FragmentActivity
 
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
-						.add(m_fragmentContainer.getId(), peopleInCircleFragment)
+						.replace(m_fragmentContainer.getId(), peopleInCircleFragment)
 						.commit();
 
 				// Update the current Fragment
