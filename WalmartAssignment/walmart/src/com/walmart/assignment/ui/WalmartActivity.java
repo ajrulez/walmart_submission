@@ -560,9 +560,24 @@ public class WalmartActivity extends FragmentActivity
 	    // No saved bundle, show user information
 	    //
 	    else {
-	    	Log.d(TAG, "onConnected() - No bundle stored, show user information");
-	    	// Show user information
-	    	updateUi(UiState.SHOW_USER_INFORMATION);
+	    	Log.d(TAG, "onConnected() - No bundle stored, use instance variables");
+	    	
+	    	if(m_currentFragment != null) {
+	    		if(m_currentFragment instanceof PeopleInCircleFragment &&
+	    				m_peopleList != null &&
+	    				m_peopleList.size() > 0) {
+	    			updateUi(UiState.SHOW_PEOPLE_IN_CIRCLE);
+	    		}
+	    		else {
+	    			updateUi(UiState.SHOW_USER_INFORMATION);
+	    		}
+	    	}
+	    	
+	    	// Default
+	    	else {
+	    		// Show user information
+	    		updateUi(UiState.SHOW_USER_INFORMATION);
+	    	}
 	    }
 
 	    // Indicate that the sign in process is complete.

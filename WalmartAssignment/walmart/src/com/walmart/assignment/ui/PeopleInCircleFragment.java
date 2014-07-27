@@ -115,11 +115,9 @@ public class PeopleInCircleFragment extends BaseHeadlessFragment {
 			final String message = getStringFromResources(R.string.noNetwork);
 			if (m_uiUpdater != null) {
 				m_uiUpdater.showAlert(title, message);
-			}
-			
-			// Show Login UI
-			if(m_uiUpdater != null) {
-				m_uiUpdater.showLoginUi();
+				
+				// Show UserInfo
+				m_uiUpdater.showUserInformation();
 			}
 		}
 		
@@ -143,6 +141,7 @@ public class PeopleInCircleFragment extends BaseHeadlessFragment {
 				final String message = getStringFromResources(R.string.emptyPeopleList);
 				if (m_uiUpdater != null) {
 					m_uiUpdater.showAlert(title, message);
+					m_uiUpdater.showUserInformation();
 				}
 			}
 		}
@@ -154,6 +153,7 @@ public class PeopleInCircleFragment extends BaseHeadlessFragment {
 			final String message = getStringFromResources(R.string.emptyPeopleList);
 			if (m_uiUpdater != null) {
 				m_uiUpdater.showAlert(title, message);
+				m_uiUpdater.showUserInformation();
 			}
 		}
 	}
