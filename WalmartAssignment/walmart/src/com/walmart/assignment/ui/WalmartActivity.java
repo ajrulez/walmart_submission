@@ -1,6 +1,7 @@
 package com.walmart.assignment.ui;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -30,6 +31,7 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -193,10 +195,6 @@ public class WalmartActivity extends FragmentActivity
         	// If we are already logged in and we have network
         	if(m_loginState == LoginState.STATE_NORMAL) {
         		m_signInButton.setVisibility(View.GONE);
-        		
-        		// Don't update the UI here. UI will get updated
-        		// upon successful connection. 
-        		//updateUi(UiState.SHOW_USER_INFORMATION);
         	}
         	
         	// Get saved People in Circle's List
@@ -534,7 +532,7 @@ public class WalmartActivity extends FragmentActivity
 	    getPeopleInCircles();
 	    
 	    // Get previous fragment from the bundle, if any
-	    // and update the UI to show that Fragment
+	    // and update the UI to show that Fragment 
 	    if(m_mainBundle != null) {
 	    	String lastFragmentName = m_mainBundle.getString(SAVED_LAST_FRAGMENT);
 	    	if(lastFragmentName != null &&
@@ -603,11 +601,15 @@ public class WalmartActivity extends FragmentActivity
 		
 		// If the request was successful
 		if(circleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
-			// Clear existing results
-			m_peopleList.clear();
 			
 			// Get People Buffer
 			PersonBuffer people = circleData.getPersonBuffer();
+			if(people != null &&
+					people.getCount() > 0) {
+				
+				// Clear existing results
+				m_peopleList.clear();
+			}
 			
 			try {
 				int nCount = people.getCount();
@@ -800,14 +802,6 @@ public class WalmartActivity extends FragmentActivity
 				break;
 				
 			case SHOW_PEOPLE_IN_CIRCLE:
-				// If we are already showing PeopleInCircleFragment Fragment
-				if(m_currentFragment != null &&
-						m_currentFragment instanceof PeopleInCircleFragment &&
-						m_currentFragment.isFragmentAttached()) {
-					Log.d(TAG, "updateUi() - Already showing PeopleInCircleFragment, Nothing to update");
-					return;
-				}
-				
 				// Create an instance of PeopleInCircleFragment
 				PeopleInCircleFragment peopleInCircleFragment = new PeopleInCircleFragment();
 
@@ -827,7 +821,6 @@ public class WalmartActivity extends FragmentActivity
 				// Add the fragment to the container
 				getSupportFragmentManager().beginTransaction()
 						.replace(m_fragmentContainer.getId(), peopleInCircleFragment)
-						.addToBackStack(null)
 						.commit();
 
 				// Update the current Fragment
