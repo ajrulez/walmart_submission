@@ -85,7 +85,7 @@
         android:layout_centerHorizontal="true"
         android:text="@string/peopleInCircleLabel"
         android:textColor="#FFFFFF"
-        android:background="@color/GoogleRed"
+        style="@style/googleredbutton"
         android:layout_width="wrap_content"
         android:layout_height="40dip"
         android:paddingLeft ="20dip"

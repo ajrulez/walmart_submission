@@ -22,7 +22,7 @@
           android:layout_marginTop="10dip"
           android:text="@string/signOutLabel"
           android:textColor="#FFFFFF"
-          android:background="@color/GoogleRed"
+          style="@style/googleredbutton"
           android:layout_gravity="center_horizontal"
           android:visibility="gone" />
     
