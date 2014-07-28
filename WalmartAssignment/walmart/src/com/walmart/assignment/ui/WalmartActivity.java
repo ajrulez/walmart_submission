@@ -989,6 +989,14 @@ public class WalmartActivity extends FragmentActivity
 		 * m_googleApiClient.connect();
 		 */
 		
+		// Set Main Bundle to null
+		m_mainBundle = null;
+		
+		// Clear user information
+		m_loggedInUser = null;
+		
+		// Reset the Friends list
+		m_peopleList.clear();
 		// Update the UI
 		updateUi(UiState.SHOW_LOGIN_UI);
 	}
